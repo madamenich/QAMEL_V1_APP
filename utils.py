@@ -37,43 +37,28 @@ class DataOperationCustomNode:
         self.config = config
 
 
-# Mapping of type to class
-NODE_TYPE_MAP = {
+type_to_class = {
     "datasetCustomNode": DatasetCustomNode,
     "dataPrepCustomNode2Sources": DataPrepCustomNode2Sources,
     "dataQMLModelCustomNode": DataQMLModelCustomNode,
-    "dataOperationCustomNode": DataOperationCustomNode,
-    "dataOperationCustomNode2Targets": DataOperationCustomNode2Targets,
-    "dataOperationCustomNode": DataOperationCustomNode
+    # Add more mappings for other types...
 }
 
-# Your JSON data
-json_data = [...]  # List of dictionaries, each representing a node
 
-# Create instances based on type
-
-
-def extract_properties(request):
-    json_data = extract_json(request)
-    node_instances = []
-    for node_data in json_data:
-        node_type = node_data["type"]
-        data = node_data.get("data", {})
-        config = node_data.get("config", {})
-
-        if node_type in NODE_TYPE_MAP:
-            node_instance = NODE_TYPE_MAP[node_type](data, config)
-            node_instances.append(node_instance)
-
-    # Example usage
-    for node_instance in node_instances:
-        print(type(node_instance).__name__)
-        print("Data:", node_instance.data)
-        print("Config:", node_instance.config)
-        print()
+# Function to create the model class based on the "type" in the JSON request
+def create_model_class(request_body):
+    model_instances = []
+    for item in request_body:
+        item_type = item.get("type")
+        if item_type in type_to_class:
+            model_class = type_to_class[item_type]
+            model_instance = model_class(item["config"], item["data"])
+            model_instances.append(model_instance)
+    return model_instances
 
 
-def extract_json(request) :
+def extract_json(request):
+    main_props = {}
     request_body = request.json
 
     if request_body is None:
@@ -98,4 +83,39 @@ def extract_json(request) :
             "config": node_config_kv
         })
 
+    # for node in node_properties:
+    #     if node["type"] == "datasetCustomNode":
+    #         main_props["datasets_type"] = node["data"]["label"]
+        #     main_props["labels"] = node["config"]["degits_of_interest"]
+        #     main_props['number_of_samples'] = node["config"]["num_samples"]
+        # if node["type"] == "dataPrepCustomNode2Sources":
+        #     main_props['split_ratio'] = node['config']['fraction']  #
+        #     main_props['random_seed'] = node["config"]["random_seed"]
+        # if node["type"] == "dataQMLModelCustomNode":
+        #     main_props['qubit_number'] = node["config"]["num_qubits"]
+        #     main_props['is_cuda'] = node["config"]["use_cuda"]
+        #     main_props['task_name'] = node["data"]["label"]
+        # if node["type"] == "dataOperationCustomNode":
+        #     main_props['train_epochs'] = node["config"]["epochs"]
+
+    objects_by_types = get_node_by_type(node_properties)
+    print(objects_by_types)
+
     return jsonify(node_properties)
+
+
+def get_node_by_type(request_body):
+    object_by_type = {}
+
+    for item in request_body:
+        item_type = item.get("type")
+        if item_type not in object_by_type:
+            object_by_type[item_type] = []
+
+        object_by_type[item_type].append({
+            "type": item.get("type"),
+            "config": item.get("config"),
+            "data": item.get("data")
+        })
+
+    return object_by_type
