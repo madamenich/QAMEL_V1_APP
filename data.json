@@ -1,0 +1,219 @@
+{
+  "nodes": [
+    {
+      "width": 176,
+      "height": 42,
+      "id": "1",
+      "position": {
+        "x": 0,
+        "y": 0
+      },
+      "data": {
+        "label": "MNIST",
+        "nodeType": "mnist",
+        "error": false
+      },
+      "type": "datasetCustomNode",
+      "selected": false,
+      "dragging": false,
+      "positionAbsolute": {
+        "x": 0,
+        "y": 0
+      },
+      "config": {
+        "degits_of_interest": [
+          "0",
+          "1"
+        ],
+        "num_samples": "75"
+      }
+    },
+    {
+      "width": 176,
+      "height": 42,
+      "id": "2",
+      "position": {
+        "x": 0,
+        "y": 100
+      },
+      "data": {
+        "label": "Splitting Data",
+        "nodeType": "splitting"
+      },
+      "type": "dataPrepCustomNode2Sources",
+      "positionAbsolute": {
+        "x": 0,
+        "y": 100
+      },
+      "selected": false,
+      "dragging": false,
+      "config": {
+        "splitting_mode": "rows",
+        "fraction": "0.7",
+        "random_split": false,
+        "random_seed": "",
+        "stratify": "false"
+      }
+    },
+    {
+      "width": 176,
+      "height": 42,
+      "id": "3",
+      "position": {
+        "x": -100,
+        "y": 200
+      },
+      "data": {
+        "label": "QFC Classification",
+        "nodeType": "qfc_classification"
+      },
+      "type": "dataQMLModelCustomNode",
+      "positionAbsolute": {
+        "x": -100,
+        "y": 200
+      },
+      "selected": false,
+      "dragging": false,
+      "config": {
+        "num_qubits": "4",
+        "use_cuda": false
+      }
+    },
+    {
+      "width": 176,
+      "height": 42,
+      "id": "4",
+      "position": {
+        "x": -100,
+        "y": 300
+      },
+      "data": {
+        "label": "Training",
+        "nodeType": "training"
+      },
+      "type": "dataOperationCustomNode",
+      "positionAbsolute": {
+        "x": -100,
+        "y": 300
+      },
+      "selected": false,
+      "dragging": false,
+      "config": {
+        "epochs": "5"
+      }
+    },
+    {
+      "width": 176,
+      "height": 42,
+      "id": "5",
+      "position": {
+        "x": 0,
+        "y": 400
+      },
+      "data": {
+        "label": "Testing",
+        "nodeType": "testing"
+      },
+      "type": "dataOperationCustomNode2Targets",
+      "positionAbsolute": {
+        "x": 0,
+        "y": 400
+      },
+      "selected": false,
+      "dragging": false
+    },
+    {
+      "width": 176,
+      "height": 42,
+      "id": "6",
+      "position": {
+        "x": 0,
+        "y": 500
+      },
+      "data": {
+        "label": "Save Model",
+        "nodeType": "save_model",
+        "noSource": true,
+        "cannotConnectRules": [
+          {
+            "source": "6",
+            "target": "7"
+          }
+        ]
+      },
+      "type": "dataOperationCustomNode",
+      "positionAbsolute": {
+        "x": 0,
+        "y": 500
+      },
+      "selected": true,
+      "dragging": false
+    }
+  ],
+  "edges": [
+    {
+      "id": "e1-2",
+      "source": "1",
+      "target": "2",
+      "markerEnd": {
+        "type": "arrowclosed"
+      }
+    },
+    {
+      "id": "e2-3",
+      "source": "2",
+      "target": "3",
+      "markerEnd": {
+        "type": "arrowclosed"
+      }
+    },
+    {
+      "id": "e2-5",
+      "sourceHandle": "test",
+      "targetHandle": "test",
+      "source": "2",
+      "target": "5",
+      "markerEnd": {
+        "type": "arrowclosed"
+      }
+    },
+    {
+      "id": "e3-4",
+      "source": "3",
+      "target": "4",
+      "markerEnd": {
+        "type": "arrowclosed"
+      }
+    },
+    {
+      "id": "e4-5",
+      "targetHandle": "model",
+      "source": "4",
+      "target": "5",
+      "markerEnd": {
+        "type": "arrowclosed"
+      }
+    },
+    {
+      "id": "e5-6",
+      "source": "5",
+      "target": "6",
+      "markerEnd": {
+        "type": "arrowclosed"
+      }
+    },
+    {
+      "id": "e5-7",
+      "source": "5",
+      "target": "7",
+      "markerEnd": {
+        "type": "arrowclosed"
+      }
+    }
+  ],
+  "viewport": {
+    "x": 1362.79939617578,
+    "y": 37.22727272727275,
+    "zoom": 1.37370010063737
+  }
+}
