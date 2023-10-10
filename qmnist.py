@@ -35,6 +35,7 @@ from torch.nn import (
     ReLU,
 )
 import torch.nn.functional as F
+from utils.qdatasets import load_dataset, preprocess
 
 """
 Classical Neural Network
@@ -84,13 +85,13 @@ def create_qnn():
     return qnn
 
 
-def load_and_preprocess_data(batch_size=1, n_samples=100):
+def load_and_preprocess_data(dataset='MNIST', classes=[0, 1], batch_size=1, n_samples=100):
     # Use pre-defined torchvision function to load MNIST train data
-    X_train = datasets.MNIST(
-        root="./data", train=True, download=True, transform=transforms.Compose([transforms.ToTensor()])
-    )
+    X_train = load_dataset(dataset)
+
     idx = np.append(
-        np.where(X_train.targets == 0)[0][:n_samples], np.where(X_train.targets == 1)[0][:n_samples]
+        np.where(X_train.targets == classes[0])[0][:n_samples],
+        np.where(X_train.targets == classes[1])[0][:n_samples]
     )
     X_train.data = X_train.data[idx]
     X_train.targets = X_train.targets[idx]
@@ -106,7 +107,6 @@ def plot_loss_convergence(loss_list):
     plt.xlabel("Training Iterations")
     plt.ylabel("Neg. Log Likelihood Loss")
     plt.savefig("plots/loss_convergence.png")
-
 
 
 def train_model(model, train_loader, optimizer, loss_func, epochs):
@@ -154,10 +154,8 @@ def evaluate_model(model, test_loader, loss_func):
     return average_loss, accuracy
 
 
-
 def plot_predict_label(model, test_loader, n_samples_show=6, lr=0.001):
     # Plot predicted labels
-
 
     count = 0
     fig, axes = plt.subplots(nrows=1, ncols=n_samples_show, figsize=(10, 3))
@@ -183,10 +181,12 @@ def plot_predict_label(model, test_loader, n_samples_show=6, lr=0.001):
     plt.tight_layout()
     plt.savefig("plots/predict_label.png")
 
-def main(batch_size=1,train=100,test =50, epochs=10, lr=0.001):
 
-    train_loader = load_and_preprocess_data(batch_size=batch_size, n_samples=train)
-    test_loader = load_and_preprocess_data(batch_size=batch_size, n_samples=test)
+def main(dataset='MNIST', n_samples=75, batch_size=1, classes=[0, 1], epochs=10, lr=0.001):
+
+    train_loader, test_loader = preprocess(dataset_type='MNIST', classes=classes, n_samples=n_samples,
+                                           batch_size=batch_size,
+                                           fraction=0.7)
 
     model = Net(create_qnn())
 
@@ -196,16 +196,33 @@ def main(batch_size=1,train=100,test =50, epochs=10, lr=0.001):
     average_loss, accuracy = evaluate_model(model, test_loader, loss_func)
     plot_loss_convergence(loss_list)
 
+def parse_labels(labels_str):
+    # Split the input string on commas and convert to integers
+    return [int(label) for label in labels_str.split(',')]
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--test", type=int, default=50)
-    parser.add_argument("--train", type=int, default=100)
+    parser.add_argument("--test", type=int, default=100)
+    parser.add_argument("--train", type=int, default=200)
     parser.add_argument("--epochs", type=int, default=10)
     parser.add_argument("--lr", type=float, default=0.001)
     parser.add_argument("--batch_size", type=int, default=1)
+    parser.add_argument("--seed", type=int, default=42)
+    parser.add_argument("--cuda", type=bool, default=False)
+    parser.add_argument("--shots", type=int, default=1000)
+    parser.add_argument("--dataset", type=str, default='MNIST')
+    parser.add_argument("--n_samples", type=int, default=100)
+    parser.add_argument("--fraction", type=float, default=0.7)
+    parser.add_argument("--classes", type=str, default='0,1')
+
     args = parser.parse_args()
-
-    main(args.batch_size,args.train,args.test,args.epochs,args.lr)
-
-
+    device = torch.device("cuda" if args.cuda else "cpu")
+    #Check if --labels argument is provided
+    if args.classes:
+        classes = parse_labels(args.classes)
+        print('Parsed labels:', classes)
+    manual_seed(args.seed)
+    main(dataset=args.dataset, n_samples=args.n_samples, batch_size=args.batch_size, epochs=args.epochs, lr=args.lr)
+    # caltech101 = datasets.Caltech101(root="./data", download=True)
+    # print(caltech101.data.class_to_idx)
