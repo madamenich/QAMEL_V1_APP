@@ -1,0 +1,125 @@
+[
+  {
+    "id": "nodedataset_OCIw7",
+    "schemeId": "qamel:dataset:mnist",
+    "type": "dataset",
+    "subNodeType": "mnist",
+    "inputs": [
+      {
+        "type": "value",
+        "name": "degits_of_interest",
+        "value": [
+          "2",
+          "3"
+        ]
+      },
+      {
+        "type": "value",
+        "name": "num_samples",
+        "value": "100"
+      }
+    ]
+  },
+  {
+    "id": "nodepreprocess_64QkN",
+    "schemeId": "qamel:dataprep:splitting",
+    "type": "dataPrep",
+    "subNodeType": "splitting",
+    "inputs": [
+      {
+        "type": "edge",
+        "name": "nodepreprocess_64QkN",
+        "value": "nodedataset_OCIw7_mnist"
+      },
+      {
+        "type": "value",
+        "name": "splitting_mode",
+        "value": "rows"
+      },
+      {
+        "type": "value",
+        "name": "fraction",
+        "value": "0.7"
+      },
+      {
+        "type": "value",
+        "name": "random_split",
+        "value": false
+      },
+      {
+        "type": "value",
+        "name": "random_seed",
+        "value": ""
+      },
+      {
+        "type": "value",
+        "name": "stratify",
+        "value": "false"
+      }
+    ]
+  },
+  {
+    "id": "nodeqmodel_W1pE8",
+    "schemeId": "qamel:dataqmlmodel:qfc_classification",
+    "type": "dataQMLModel",
+    "subNodeType": "qfc_classification",
+    "inputs": [
+      {
+        "type": "edge",
+        "name": "nodeqmodel_W1pE8",
+        "value": "nodepreprocess_64QkN_splitting_1"
+      },
+      {
+        "type": "value",
+        "name": "num_qubits",
+        "value": "4"
+      },
+      {
+        "type": "value",
+        "name": "use_cuda",
+        "value": false
+      },
+      {
+        "type": "value",
+        "name": "optimizer",
+        "value": "adam"
+      },
+      {
+        "type": "value",
+        "name": "lr",
+        "value": "0.001"
+      }
+    ]
+  },
+  {
+    "id": "nodeoperation_glxgQ",
+    "schemeId": "qamel:dataoperation:training",
+    "type": "dataOperation",
+    "subNodeType": "training",
+    "inputs": [
+      {
+        "type": "edge",
+        "name": "nodeoperation_glxgQ",
+        "value": "nodeqmodel_W1pE8_qfc_classification"
+      },
+      {
+        "type": "value",
+        "name": "epochs",
+        "value": "5"
+      }
+    ]
+  },
+  {
+    "id": "nodeoperation_DOHZ6",
+    "schemeId": "qamel:dataoperation:testing",
+    "type": "dataOperation",
+    "subNodeType": "testing",
+    "inputs": [
+      {
+        "type": "edge",
+        "name": "nodeoperation_DOHZ6",
+        "value": "nodepreprocess_64QkN_splitting_2"
+      }
+    ]
+  }
+]

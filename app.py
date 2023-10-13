@@ -13,9 +13,14 @@ def hello_world():  # put application's code here
 
 @app.route('/extract', methods=['POST'])
 def extract_nodes():
-    return utils.extract_json(request)
+    return utils.extract_json2(request)
 
-
+@app.route('/tasks', methods=['POST'])
+def extract_task():
+    # request_body = request.json
+    task = {}
+    task = utils.extract_json2(request)
+    return task
 @app.route('/qml', methods=['POST'])
 def run_qml():
     # request_body = request.json

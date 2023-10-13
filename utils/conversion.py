@@ -90,7 +90,7 @@ def extract_json(request):
             main_props['number_of_samples'] = node.get("config", {}).get("num_samples", 0)
         if node["type"] == "dataPrepCustomNode2Sources":
             main_props['split_ratio'] = node.get('config', {}).get('fraction', 0.0)
-            main_props['random_seed'] = node.get("config", {}).get("random_seed",42)
+            main_props['random_seed'] = node.get("config", {}).get("random_seed", 42)
         if node["type"] == "dataQMLModelCustomNode":
             main_props['qubit_number'] = node.get("config", {}).get("num_qubits", 0)
             main_props['is_cuda'] = node.get("config", {}).get("use_cuda", False)
@@ -102,6 +102,72 @@ def extract_json(request):
     print(objects_by_types)
 
     return jsonify(main_props)
+
+
+def extract_json2(request):
+    main_props = []
+    nodes = request.json
+    response = {}
+    training = {}
+    dataset = {}
+    testing = {}
+    configurarion = {}
+
+    if nodes is None:
+        return "Invalid JSON data in request", 400
+    for node in nodes:
+        if node.get('type') == 'dataset':
+            response['datasets_type'] = node.get('subNodeType', '')
+        if node.get('type') == 'dataQMLModel':
+            response['task'] = node.get('subNodeType', '')
+            # response['qubit_number'] = node.get('inputs')['type'] == 'qubit_number'
+            inputs = node.get('inputs', [])
+
+            for input_item in inputs:
+                input_type = input_item.get('type', '')
+                if input_type == 'num_qubits':
+                    response['qubit_number'] = input_item.get('value', 0)
+                elif input_type == 'use_cuda':
+                    response['is_cuda'] = input_item.get('value', '')
+                elif input_type == 'optimizer':
+                    response['optimizer'] = input_item.get('value', '')
+                elif input_type == 'lr':
+                    response['learning_rate'] = input_item.get('value', '')
+
+        if node.get('type') == 'dataOperation':
+            inputs = node.get('inputs', [])
+            for input_item in inputs:
+                input_type = input_item.get('type', '')
+                if input_type == 'epochs':
+                    response['train_epochs'] = input_item.get('value', 0)
+        if node.get('type') == 'dataOperation2Targets':
+            inputs = node.get('inputs', [])
+            # for input_item in inputs:
+            #     input_type = input_item.get('type', '')
+            #     if input_type == 'epochs':
+        if node.get('type') == 'dataOperation':
+            inputs = node.get('inputs', [])
+            # for input_item in inputs:
+            #     input_type = input_item.get('type', '')
+            #     if input_type == 'epochs':
+        if node.get('type') == 'dataPrep2Sources':
+            inputs = node.get('inputs', [])
+            for input_item in inputs:
+                input_type = input_item.get('type', '')
+                if input_type == 'splitting_mode':
+                    response['splitting_mode'] = input_item.get('value', '')
+                if input_type == 'fraction':
+                    response['fraction'] = input_item.get('value', 0.7)
+                if input_type == 'random_split':
+                    response['random_split'] = input_item.get('value', False)
+                if input_type == 'random_seed':
+                    response['random_seed'] = input_item.get('value', 42)
+                if input_type == 'stratify':
+                    response['stratify'] = input_item.get('value', False)
+
+
+        main_props.append(node)
+    return jsonify(response)
 
 
 def get_node_by_type(request_body):
