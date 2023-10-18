@@ -116,19 +116,40 @@ def extract_json2(request):
     if nodes is None:
         return "Invalid JSON data in request", 400
     for node in nodes:
+
+        # TODO: extract the dataset
         if node.get('type') == 'dataset':
             response['datasets_type'] = node.get('subNodeType', '')
+            inputs = node.get('inputs', [])
+            ## TODO: handling when the user use their own dataset
+            is_custom = ((response['datasets_type'] == 'csv') | (response['datasets_type'] == 'txt'))
+            if is_custom:
+                for input_item in inputs:
+                    input_type = input_item.get('name', '')
+                    if input_type == 'url':
+                        response['csv_path'] = input_item.get('value', '')
+                    if input_type == 'header':
+                        response['header'] = input_item.get('value', '')
+            else:
+                for input_item in inputs:
+                    input_type = input_item.get('name', '')
+                    print(input_type)
+                    if input_type == 'degits_of_interest':
+                        response['labels'] = input_item.get('value', [])
+                        print(response['labels'])
+                    if input_type == 'num_samples':
+                        response['number_of_samples'] = input_item.get('value', 0)
         if node.get('type') == 'dataQMLModel':
             response['task'] = node.get('subNodeType', '')
             # response['qubit_number'] = node.get('inputs')['type'] == 'qubit_number'
             inputs = node.get('inputs', [])
 
             for input_item in inputs:
-                input_type = input_item.get('type', '')
+                input_type = input_item.get('name', '')
                 if input_type == 'num_qubits':
-                    response['qubit_number'] = input_item.get('value', 0)
+                    response['num_qubits'] = input_item.get('value', 0)
                 elif input_type == 'use_cuda':
-                    response['is_cuda'] = input_item.get('value', '')
+                    response['use_cuda'] = input_item.get('value', False)
                 elif input_type == 'optimizer':
                     response['optimizer'] = input_item.get('value', '')
                 elif input_type == 'lr':
@@ -137,23 +158,13 @@ def extract_json2(request):
         if node.get('type') == 'dataOperation':
             inputs = node.get('inputs', [])
             for input_item in inputs:
-                input_type = input_item.get('type', '')
+                input_type = input_item.get('name', '')
                 if input_type == 'epochs':
-                    response['train_epochs'] = input_item.get('value', 0)
-        if node.get('type') == 'dataOperation2Targets':
-            inputs = node.get('inputs', [])
-            # for input_item in inputs:
-            #     input_type = input_item.get('type', '')
-            #     if input_type == 'epochs':
-        if node.get('type') == 'dataOperation':
-            inputs = node.get('inputs', [])
-            # for input_item in inputs:
-            #     input_type = input_item.get('type', '')
-            #     if input_type == 'epochs':
-        if node.get('type') == 'dataPrep2Sources':
+                    response['epochs'] = input_item.get('value', 0)
+        if node.get('type') == 'dataPrep':
             inputs = node.get('inputs', [])
             for input_item in inputs:
-                input_type = input_item.get('type', '')
+                input_type = input_item.get('name', '')
                 if input_type == 'splitting_mode':
                     response['splitting_mode'] = input_item.get('value', '')
                 if input_type == 'fraction':
@@ -166,8 +177,13 @@ def extract_json2(request):
                     response['stratify'] = input_item.get('value', False)
 
 
-        main_props.append(node)
+
     return jsonify(response)
+
+
+
+
+
 
 
 def get_node_by_type(request_body):

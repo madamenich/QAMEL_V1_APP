@@ -1,219 +1,122 @@
+[
 {
-  "nodes": [
-    {
-      "width": 176,
-      "height": 42,
-      "id": "1",
-      "position": {
-        "x": 0,
-        "y": 0
+ "id": "nodedataset_OCIw7",
+    "schemeId": "qamel:dataset:csv",
+    "type": "dataset",
+    "subNodeType": "csv",
+    "inputs": [
+      {
+        "type": "value",
+        "name": "url",
+        "value": "https://storage.googleapis.com/download.tensorflow.org/data/abalone_train.csv"
       },
-      "data": {
-        "label": "MNIST",
-        "nodeType": "mnist",
-        "error": false
-      },
-      "type": "datasetCustomNode",
-      "selected": false,
-      "dragging": false,
-      "positionAbsolute": {
-        "x": 0,
-        "y": 0
-      },
-      "config": {
-        "degits_of_interest": [
-          "0",
-          "1"
-        ],
-        "num_samples": "75"
+      {
+        "type": "value",
+        "name": "header",
+        "value": false
       }
-    },
-    {
-      "width": 176,
-      "height": 42,
-      "id": "2",
-      "position": {
-        "x": 0,
-        "y": 100
+    ]
+},
+  {
+    "id": "nodepreprocess_64QkN",
+    "schemeId": "qamel:dataprep:splitting",
+    "type": "dataPrep",
+    "subNodeType": "splitting",
+    "inputs": [
+      {
+        "type": "edge",
+        "name": "nodepreprocess_64QkN",
+        "value": "nodedataset_OCIw7_mnist"
       },
-      "data": {
-        "label": "Splitting Data",
-        "nodeType": "splitting"
+      {
+        "type": "value",
+        "name": "splitting_mode",
+        "value": "rows"
       },
-      "type": "dataPrepCustomNode2Sources",
-      "positionAbsolute": {
-        "x": 0,
-        "y": 100
+      {
+        "type": "value",
+        "name": "fraction",
+        "value": "0.7"
       },
-      "selected": false,
-      "dragging": false,
-      "config": {
-        "splitting_mode": "rows",
-        "fraction": "0.7",
-        "random_split": false,
-        "random_seed": "",
-        "stratify": "false"
+      {
+        "type": "value",
+        "name": "random_split",
+        "value": false
+      },
+      {
+        "type": "value",
+        "name": "random_seed",
+        "value": ""
+      },
+      {
+        "type": "value",
+        "name": "stratify",
+        "value": "false"
       }
-    },
-    {
-      "width": 176,
-      "height": 42,
-      "id": "3",
-      "position": {
-        "x": -100,
-        "y": 200
+    ]
+  },
+  {
+    "id": "nodeqmodel_W1pE8",
+    "schemeId": "qamel:dataqmlmodel:qfc_classification",
+    "type": "dataQMLModel",
+    "subNodeType": "qfc_classification",
+    "inputs": [
+      {
+        "type": "edge",
+        "name": "nodeqmodel_W1pE8",
+        "value": "nodepreprocess_64QkN_splitting_1"
       },
-      "data": {
-        "label": "QFC Classification",
-        "nodeType": "qfc_classification"
+      {
+        "type": "value",
+        "name": "num_qubits",
+        "value": "4"
       },
-      "type": "dataQMLModelCustomNode",
-      "positionAbsolute": {
-        "x": -100,
-        "y": 200
+      {
+        "type": "value",
+        "name": "use_cuda",
+        "value": false
       },
-      "selected": false,
-      "dragging": false,
-      "config": {
-        "num_qubits": "4",
-        "use_cuda": false
+      {
+        "type": "value",
+        "name": "optimizer",
+        "value": "adam"
+      },
+      {
+        "type": "value",
+        "name": "lr",
+        "value": "0.001"
       }
-    },
-    {
-      "width": 176,
-      "height": 42,
-      "id": "4",
-      "position": {
-        "x": -100,
-        "y": 300
+    ]
+  },
+  {
+    "id": "nodeoperation_glxgQ",
+    "schemeId": "qamel:dataoperation:training",
+    "type": "dataOperation",
+    "subNodeType": "training",
+    "inputs": [
+      {
+        "type": "edge",
+        "name": "nodeoperation_glxgQ",
+        "value": "nodeqmodel_W1pE8_qfc_classification"
       },
-      "data": {
-        "label": "Training",
-        "nodeType": "training"
-      },
-      "type": "dataOperationCustomNode",
-      "positionAbsolute": {
-        "x": -100,
-        "y": 300
-      },
-      "selected": false,
-      "dragging": false,
-      "config": {
-        "epochs": "5"
+      {
+        "type": "value",
+        "name": "epochs",
+        "value": "5"
       }
-    },
-    {
-      "width": 176,
-      "height": 42,
-      "id": "5",
-      "position": {
-        "x": 0,
-        "y": 400
-      },
-      "data": {
-        "label": "Testing",
-        "nodeType": "testing"
-      },
-      "type": "dataOperationCustomNode2Targets",
-      "positionAbsolute": {
-        "x": 0,
-        "y": 400
-      },
-      "selected": false,
-      "dragging": false
-    },
-    {
-      "width": 176,
-      "height": 42,
-      "id": "6",
-      "position": {
-        "x": 0,
-        "y": 500
-      },
-      "data": {
-        "label": "Save Model",
-        "nodeType": "save_model",
-        "noSource": true,
-        "cannotConnectRules": [
-          {
-            "source": "6",
-            "target": "7"
-          }
-        ]
-      },
-      "type": "dataOperationCustomNode",
-      "positionAbsolute": {
-        "x": 0,
-        "y": 500
-      },
-      "selected": true,
-      "dragging": false
-    }
-  ],
-  "edges": [
-    {
-      "id": "e1-2",
-      "source": "1",
-      "target": "2",
-      "markerEnd": {
-        "type": "arrowclosed"
+    ]
+  },
+  {
+    "id": "nodeoperation_DOHZ6",
+    "schemeId": "qamel:dataoperation:testing",
+    "type": "dataOperation",
+    "subNodeType": "testing",
+    "inputs": [
+      {
+        "type": "edge",
+        "name": "nodeoperation_DOHZ6",
+        "value": "nodepreprocess_64QkN_splitting_2"
       }
-    },
-    {
-      "id": "e2-3",
-      "source": "2",
-      "target": "3",
-      "markerEnd": {
-        "type": "arrowclosed"
-      }
-    },
-    {
-      "id": "e2-5",
-      "sourceHandle": "test",
-      "targetHandle": "test",
-      "source": "2",
-      "target": "5",
-      "markerEnd": {
-        "type": "arrowclosed"
-      }
-    },
-    {
-      "id": "e3-4",
-      "source": "3",
-      "target": "4",
-      "markerEnd": {
-        "type": "arrowclosed"
-      }
-    },
-    {
-      "id": "e4-5",
-      "targetHandle": "model",
-      "source": "4",
-      "target": "5",
-      "markerEnd": {
-        "type": "arrowclosed"
-      }
-    },
-    {
-      "id": "e5-6",
-      "source": "5",
-      "target": "6",
-      "markerEnd": {
-        "type": "arrowclosed"
-      }
-    },
-    {
-      "id": "e5-7",
-      "source": "5",
-      "target": "7",
-      "markerEnd": {
-        "type": "arrowclosed"
-      }
-    }
-  ],
-  "viewport": {
-    "x": 1362.79939617578,
-    "y": 37.22727272727275,
-    "zoom": 1.37370010063737
+    ]
   }
-}
+]
