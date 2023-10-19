@@ -1,62 +1,6 @@
 from flask import Flask, request, jsonify
 
 
-class DatasetCustomNode:
-    def __init__(self, data, config):
-        self.data = data
-        self.config = config
-
-
-class DataPrepCustomNode2Sources:
-    def __init__(self, data, config):
-        self.data = data
-        self.config = config
-
-
-class DataQMLModelCustomNode:
-    def __init__(self, data, config):
-        self.data = data
-        self.config = config
-
-
-class DataOperationCustomNode:
-    def __init__(self, data, config):
-        self.data = data
-        self.config = config
-
-
-class DataOperationCustomNode2Targets:
-    def __init__(self, data, config):
-        self.data = data
-        self.config = config
-
-
-class DataOperationCustomNode:
-    def __init__(self, data, config):
-        self.data = data
-        self.config = config
-
-
-type_to_class = {
-    "datasetCustomNode": DatasetCustomNode,
-    "dataPrepCustomNode2Sources": DataPrepCustomNode2Sources,
-    "dataQMLModelCustomNode": DataQMLModelCustomNode,
-    # Add more mappings for other types...
-}
-
-
-# Function to create the model class based on the "type" in the JSON request
-def create_model_class(request_body):
-    model_instances = []
-    for item in request_body:
-        item_type = item.get("type")
-        if item_type in type_to_class:
-            model_class = type_to_class[item_type]
-            model_instance = model_class(item["config"], item["data"])
-            model_instances.append(model_instance)
-    return model_instances
-
-
 def extract_json(request):
     main_props = {}
     request_body = request.json
